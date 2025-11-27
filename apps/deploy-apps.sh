@@ -7,7 +7,7 @@
 set -e
 
 # Navigate to project root
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 NAMESPACE="staging"
 PROJECT_ID="rock-fortress-479417-t5"
@@ -27,10 +27,8 @@ deploy_chart() {
     # Construct helm command
     local helm_cmd="helm upgrade --install $app_name $chart_path --namespace $NAMESPACE --wait --timeout=5m"
     
-    # Only override image repository for internal services (not zipkin)
-    if [ "$app_name" != "zipkin" ]; then
-        helm_cmd="$helm_cmd --set image.repository=us-central1-docker.pkg.dev/$PROJECT_ID/ecommerce-microservices/$app_name"
-    fi
+    # Only override image repository for internal services (including zipkin now)
+    helm_cmd="$helm_cmd --set image.repository=us-central1-docker.pkg.dev/$PROJECT_ID/ecommerce-microservices/$app_name"
     
     # Execute command
     if ! $helm_cmd; then
